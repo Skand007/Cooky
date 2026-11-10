@@ -1,0 +1,49 @@
+/* Cooky's four themes. Each sets the same set of CSS variables that
+   tailwind.config.js maps to utility classes (bg-surface, text-text, etc.)
+   so components never need theme-specific logic — just these variables. */
+
+:root[data-theme="citrus"] {
+  --color-surface: #fffaf0;
+  --color-surface-alt: #fff1d6;
+  --color-text: #2b2017;
+  --color-text-muted: #7a6a52;
+  --color-accent: #f6871f;
+  --color-accent-alt: #2e8b57;
+  --color-border: #f0dcb0;
+}
+
+:root[data-theme="linen"] {
+  --color-surface: #f7f5ef;
+  --color-surface-alt: #ece7d9;
+  --color-text: #2f3328;
+  --color-text-muted: #6b7161;
+  --color-accent: #7a8b5c;
+  --color-accent-alt: #c76b4a;
+  --color-border: #ddd6c2;
+}
+
+:root[data-theme="midnight"] {
+  --color-surface: #161622;
+  --color-surface-alt: #1f2033;
+  --color-text: #f2efe9;
+  --color-text-muted: #a7a6bd;
+  --color-accent: #f6c453;
+  --color-accent-alt: #6ec6b8;
+  --color-border: #30314a;
+}
+
+:root[data-theme="charcoal"] {
+  --color-surface: #211a18;
+  --color-surface-alt: #2c2320;
+  --color-text: #f3ece6;
+  --color-text-muted: #baa89b;
+  --color-accent: #e2583e;
+  --color-accent-alt: #d9a441;
+  --color-border: #3b2f2b;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
