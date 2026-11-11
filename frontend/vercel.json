@@ -1,6 +1,3 @@
 {
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "https://cooky-9gx6.vercel.app/api/:path*" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
 }
