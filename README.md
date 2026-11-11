@@ -80,3 +80,7 @@ Backend env vars (Vercel backend project): `SPOONACULAR_API_KEY`, `GEMINI_API_KE
 ## Design: liquid glass
 
 Translucent, light-catching panels over a soft colour backdrop, a floating glass header and tab bar, spring-feel press feedback, and four themes (Citrus and Linen light; Midnight and Charcoal dark). Tokens live in `frontend/src/styles/themes.css`, materials and controls (`.glass`, `.btn`, `.chip`, `.field`) in `frontend/src/styles/index.css`. It respects `prefers-reduced-motion`, `prefers-reduced-transparency` and `prefers-contrast`.
+
+## Public bot
+
+The kitchen bot is public by default. To protect the free Gemini quota, visitors are limited to 6 messages per minute each and 300 per day in total (the owner is never limited). Tune with `CHAT_PER_MINUTE` and `CHAT_DAILY_LIMIT`, or set `CHAT_PUBLIC=false` to make it owner-only.

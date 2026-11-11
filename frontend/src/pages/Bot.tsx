@@ -77,12 +77,13 @@ export function Bot() {
         </select>
       </div>
       <p className="text-xs text-text-muted">
-        Ask what you can cook. The bot sees your current stock, expiry dates and saved recipes.
+        Ask what can be cooked from what's in Cooky's kitchen right now. It sees the current stock, expiry dates
+        and saved recipes. It's an AI, so double-check anything important.
       </p>
 
-      {!canChat && (
+      {!canChat && status !== null && (
         <p className="glass-sm text-sm">
-          The bot uses a shared free quota, so only the owner can chat. Log in as owner to use it.
+          The bot is limited to the owner right now. Log in as owner to use it.
         </p>
       )}
       {status && !status.configured && isOwner && (

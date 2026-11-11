@@ -25,9 +25,12 @@ class Settings(BaseSettings):
     # Model names change over time; if Gemini ever answers "model not found",
     # set GEMINI_MODEL to a current one (the bot also falls back through a few).
     gemini_model: str = "gemini-flash-latest"
-    # The free Gemini quota is shared by everyone who can use the bot, so it is
-    # owner-only unless this is switched on (CHAT_PUBLIC=true).
-    chat_public: bool = False
+    # The bot is public so visitors can try it. The free Gemini quota is shared by
+    # everyone, so public use is rate-limited (the owner is never limited).
+    # Set CHAT_PUBLIC=false to make it owner-only again.
+    chat_public: bool = True
+    chat_daily_limit: int = 300  # public messages per UTC day, across all visitors
+    chat_per_minute: int = 6  # public messages per visitor (IP) per minute
 
     # CORS
     frontend_origin: str = "http://localhost:5173"

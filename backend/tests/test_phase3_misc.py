@@ -79,6 +79,7 @@ def test_spoonacular_search_and_import(client, owner_headers, monkeypatch):
 
 def test_chat_access_and_503(client, owner_headers, monkeypatch):
     body = {"messages": [{"role": "user", "content": "what can I cook?"}]}
+    monkeypatch.setattr(get_settings(), "chat_public", False)
     assert client.post("/api/chat", json=body).status_code == 401
     monkeypatch.setattr(get_settings(), "gemini_api_key", None)
     assert client.post("/api/chat", json=body, headers=owner_headers).status_code == 503
@@ -118,3 +119,37 @@ def test_gemini_model_fallback(monkeypatch):
     monkeypatch.setattr(httpx, "post", fake_post)
     assert bot.call_gemini("s", [{"role": "user", "content": "hi"}]) == "ok"
     assert len(calls) == 2
+
+
+def test_public_chat_is_default_and_rate_limited(client, owner_headers, monkeypatch):
+    from app.services import ratelimit
+
+    ratelimit.reset()
+    monkeypatch.setattr("app.api.chat.call_gemini", lambda system, messages: "hi")
+    settings = get_settings()
+    assert settings.chat_public is True
+    monkeypatch.setattr(settings, "chat_per_minute", 2)
+    body = {"messages": [{"role": "user", "content": "hello"}]}
+    assert client.post("/api/chat", json=body).status_code == 200
+    assert client.post("/api/chat", json=body).status_code == 200
+    assert client.post("/api/chat", json=body).status_code == 429
+    # the owner is never limited
+    for _ in range(4):
+        assert client.post("/api/chat", json=body, headers=owner_headers).status_code == 200
+    ratelimit.reset()
+
+
+def test_public_chat_daily_cap(client, monkeypatch):
+    from app.services import ratelimit
+
+    ratelimit.reset()
+    monkeypatch.setattr("app.api.chat.call_gemini", lambda system, messages: "hi")
+    settings = get_settings()
+    monkeypatch.setattr(settings, "chat_daily_limit", 2)
+    monkeypatch.setattr(settings, "chat_per_minute", 100)
+    body = {"messages": [{"role": "user", "content": "hello"}]}
+    assert client.post("/api/chat", json=body).status_code == 200
+    assert client.post("/api/chat", json=body).status_code == 200
+    res = client.post("/api/chat", json=body)
+    assert res.status_code == 429 and "daily" in res.json()["detail"]
+    ratelimit.reset()
