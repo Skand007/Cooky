@@ -66,3 +66,13 @@ only the owner can add, edit, or delete.
 Next: recipes — Spoonacular search, the owner's own custom recipes, and the Gemini-powered bot
 that reads the current inventory — followed by the missing-ingredient and time/diet filters,
 and the stats page.
+
+## Phase 3: recipes, bot, stats
+
+- **Recipes**: your own (ingredients + steps), or import vegetarian ones from Spoonacular (owner only). "Cook now" ranks recipes by what you have, what's expiring and what you flagged "use up".
+- **Filters**: missing 0 / ≤1 / ≤2 / any, time (10 min, 30 min, 1 hour, meal prep, slow), diet (vegetarian, eggetarian, Jain).
+- **Cooked it** logs history and can subtract ingredients from stock (same units only).
+- **Bot**: Gemini chat grounded in your stock. Owner-only unless `CHAT_PUBLIC=true`.
+- **Stats** are computed live from the database.
+
+Backend env vars (Vercel backend project): `SPOONACULAR_API_KEY`, `GEMINI_API_KEY`, optional `GEMINI_MODEL`, `CHAT_PUBLIC`.

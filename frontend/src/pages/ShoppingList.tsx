@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import type { Item, ShoppingEntry } from "@/lib/types";
+import { LOCATIONS, type Item, type Location, type ShoppingEntry } from "@/lib/types";
 import { ItemAutocomplete } from "@/components/ItemAutocomplete";
 
 export function ShoppingList() {
@@ -12,6 +12,8 @@ export function ShoppingList() {
   const [pendingItem, setPendingItem] = useState<Item | { newName: string } | null>(null);
   const [quantity, setQuantity] = useState("");
   const [note, setNote] = useState("");
+  const [stockLocation, setStockLocation] = useState<Location>("shelf");
+  const [stockMsg, setStockMsg] = useState("");
 
   function load() {
     setLoading(true);
@@ -46,6 +48,16 @@ export function ShoppingList() {
       method: "PATCH",
       body: JSON.stringify({ bought: !entry.bought }),
     });
+    load();
+  }
+
+  async function stockBought() {
+    const res = await apiFetch("/api/shopping-list/stock-bought", {
+      method: "POST",
+      body: JSON.stringify({ location: stockLocation }),
+    });
+    const data: { moved: string[] } = await res.json();
+    setStockMsg(`Moved to inventory: ${data.moved.join(", ")}.`);
     load();
   }
 
@@ -103,6 +115,25 @@ export function ShoppingList() {
             Add to list
           </button>
         </form>
+      )}
+
+      {stockMsg && <p className="rounded-lg border border-border bg-surface-alt p-2 text-sm">{stockMsg}</p>}
+      {isOwner && entries.some((e) => e.bought) && (
+        <div className="flex items-center gap-2 text-sm">
+          <select
+            value={stockLocation}
+            onChange={(e) => setStockLocation(e.target.value as Location)}
+            className="rounded-lg border border-border bg-surface px-2 py-1"
+            aria-label="Where to put bought items"
+          >
+            {LOCATIONS.map((l) => (
+              <option key={l.id} value={l.id}>{l.label}</option>
+            ))}
+          </select>
+          <button onClick={stockBought} className="rounded-lg border border-border px-3 py-1">
+            Move all bought to inventory
+          </button>
+        </div>
       )}
 
       {loading ? (

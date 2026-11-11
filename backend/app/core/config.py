@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     # Third-party APIs (not needed until later phases)
     spoonacular_api_key: str | None = None
     gemini_api_key: str | None = None
+    # Model names change over time; if Gemini ever answers "model not found",
+    # set GEMINI_MODEL to a current one (the bot also falls back through a few).
+    gemini_model: str = "gemini-flash-latest"
+    # The free Gemini quota is shared by everyone who can use the bot, so it is
+    # owner-only unless this is switched on (CHAT_PUBLIC=true).
+    chat_public: bool = False
 
     # CORS
     frontend_origin: str = "http://localhost:5173"

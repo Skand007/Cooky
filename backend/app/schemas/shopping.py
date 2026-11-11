@@ -1,8 +1,27 @@
-from datetime import datetime
+from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
+from app.models.inventory import LOCATIONS
 from app.schemas.item import ItemOut
+
+
+class StockIn(BaseModel):
+    """Move bought shopping-list entries into the inventory."""
+
+    location: str
+    expiry_date: date | None = None
+
+    @field_validator("location")
+    @classmethod
+    def valid_location(cls, v: str) -> str:
+        if v not in LOCATIONS:
+            raise ValueError(f"location must be one of {LOCATIONS}")
+        return v
+
+
+class StockOut(BaseModel):
+    moved: list[str]
 
 
 class ShoppingCreate(BaseModel):

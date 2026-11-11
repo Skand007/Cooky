@@ -1,4 +1,4 @@
-"""Shared helper: inventory and shopping-list rows both accept either an
+"""Shared helper: inventory, shopping-list and recipe rows all accept either an
 existing catalogue item_id, or a new_item_name to create on the fly when the
 owner typed something not yet in the catalogue.
 """
@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.models.item import Item
+from app.services.diet import STAPLES, guess_diet
 
 
 def resolve_item(db: Session, item_id: int | None, new_item_name: str | None) -> Item:
@@ -27,7 +28,8 @@ def resolve_item(db: Session, item_id: int | None, new_item_name: str | None) ->
     if existing is not None:
         return existing
 
-    item = Item(name=name, aliases=[])
+    diet, jain_ok = guess_diet(name)
+    item = Item(name=name, aliases=[], diet=diet, jain_ok=jain_ok, staple=name.lower() in STAPLES)
     db.add(item)
     db.flush()  # assigns item.id without committing yet
     return item

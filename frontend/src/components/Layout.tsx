@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: "/inventory", label: "Inventory" },
   { to: "/recipes", label: "Recipes" },
   { to: "/shopping-list", label: "Shopping" },
+  { to: "/bot", label: "Bot" },
   { to: "/stats", label: "Stats" },
 ];
 
@@ -19,6 +20,11 @@ export function Layout() {
         <span className="font-display text-xl text-accent">Cooky</span>
         <div className="flex items-center gap-2">
           <ThemeSwitcher />
+          {isOwner && (
+            <NavLink to="/catalogue" className="text-sm text-text-muted">
+              Catalogue
+            </NavLink>
+          )}
           {isOwner ? (
             <button onClick={logout} className="text-sm text-text-muted">
               Log out
