@@ -66,25 +66,68 @@ export function ShoppingList() {
     load();
   }
 
-  const toBuy = entries.filter((e) => !e.bought);
-  const bought = entries.filter((e) => e.bought);
+  const byName = (a: ShoppingEntry, b: ShoppingEntry) => a.item.name.localeCompare(b.item.name);
+  // Everything is always visible, A–Z. Still-to-buy lines sit on top; lines that are
+  // ticked off, or already in stock, are crossed out at the bottom (also A–Z).
+  const isDone = (e: ShoppingEntry) => e.bought || e.in_stock;
+  const toBuy = entries.filter((e) => !isDone(e)).sort(byName);
+  const done = entries.filter(isDone).sort(byName);
+
+  function Row({ entry }: { entry: ShoppingEntry }) {
+    const finished = isDone(entry);
+    return (
+      <li className={`paper-row ${finished ? "is-done" : ""}`}>
+        {isOwner && !entry.in_stock ? (
+          <button
+            onClick={() => toggleBought(entry)}
+            className="paper-box"
+            aria-label={entry.bought ? `Mark ${entry.item.name} as not bought` : `Mark ${entry.item.name} as bought`}
+          >
+            {entry.bought ? "✓" : ""}
+          </button>
+        ) : (
+          <span className="paper-box" aria-hidden="true">
+            {finished ? "✓" : ""}
+          </span>
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="paper-name">
+            {entry.item.name}
+            {entry.quantity != null && (
+              <span>
+                {" "}
+                · {entry.quantity} {entry.unit ?? ""}
+              </span>
+            )}
+          </span>
+          {(entry.note || (entry.in_stock && !entry.bought)) && (
+            <span className="paper-note block">
+              {entry.in_stock && !entry.bought ? "already in stock" : entry.note}
+            </span>
+          )}
+        </span>
+        {isOwner && (
+          <button onClick={() => removeEntry(entry)} className="paper-remove" aria-label={`Remove ${entry.item.name}`}>
+            remove
+          </button>
+        )}
+      </li>
+    );
+  }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="page-title">Shopping list</h1>
         {isOwner && (
-          <button
-            onClick={() => setShowAdd((v) => !v)}
-            className="btn-primary"
-          >
+          <button onClick={() => setShowAdd((v) => !v)} className="btn-primary">
             {showAdd ? "Cancel" : "+ Add"}
           </button>
         )}
       </div>
 
       {showAdd && isOwner && (
-        <form onSubmit={addEntry} className="glass p-3 space-y-2">
+        <form onSubmit={addEntry} className="glass space-y-2">
           <ItemAutocomplete onPick={setPendingItem} placeholder="What do you need to buy?" />
           {pendingItem && (
             <p className="text-sm text-text-muted">
@@ -107,11 +150,7 @@ export function ShoppingList() {
               className="flex-1 field"
             />
           </div>
-          <button
-            type="submit"
-            disabled={!pendingItem}
-            className="w-full btn-primary"
-          >
+          <button type="submit" disabled={!pendingItem} className="w-full btn-primary">
             Add to list
           </button>
         </form>
@@ -138,74 +177,29 @@ export function ShoppingList() {
 
       {loading ? (
         <p className="text-text-muted text-sm">Loading…</p>
-      ) : entries.length === 0 ? (
-        <p className="text-text-muted text-sm">Nothing on the list.</p>
       ) : (
-        <>
-          <ul className="space-y-2">
-            {toBuy.map((entry) => (
-              <li
-                key={entry.id}
-                className="glass p-3 flex items-center gap-3"
-              >
-                {isOwner && (
-                  <input
-                    type="checkbox"
-                    checked={entry.bought}
-                    onChange={() => toggleBought(entry)}
-                    aria-label={`Mark ${entry.item.name} as bought`}
-                    className="h-5 w-5"
-                  />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium truncate">
-                    {entry.item.name}
-                    {entry.quantity != null && (
-                      <span className="text-text-muted"> · {entry.quantity} {entry.unit ?? ""}</span>
-                    )}
-                  </p>
-                  {entry.note && <p className="text-xs text-text-muted truncate">{entry.note}</p>}
-                </div>
-                {isOwner && (
-                  <button onClick={() => removeEntry(entry)} className="text-xs text-accent shrink-0">
-                    Remove
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          {bought.length > 0 && (
-            <details className="text-sm">
-              <summary className="text-text-muted cursor-pointer">
-                Bought ({bought.length})
-              </summary>
-              <ul className="space-y-2 mt-2">
-                {bought.map((entry) => (
-                  <li
-                    key={entry.id}
-                    className="glass p-3 flex items-center gap-3 opacity-60"
-                  >
-                    {isOwner && (
-                      <input
-                        type="checkbox"
-                        checked={entry.bought}
-                        onChange={() => toggleBought(entry)}
-                        className="h-5 w-5"
-                      />
-                    )}
-                    <p className="flex-1 line-through">{entry.item.name}</p>
-                    {isOwner && (
-                      <button onClick={() => removeEntry(entry)} className="text-xs text-accent">
-                        Remove
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-        </>
+        <div className="paper-wrap">
+          <span className="paper-tape" aria-hidden="true" />
+          <div className="paper">
+            <h2 className="paper-title">To buy</h2>
+            {entries.length === 0 && <p className="paper-row">Nothing on the list.</p>}
+            <ul>
+              {toBuy.map((e) => (
+                <Row key={e.id} entry={e} />
+              ))}
+            </ul>
+            {done.length > 0 && (
+              <>
+                <p className="paper-divider">Done / already in stock</p>
+                <ul>
+                  {done.map((e) => (
+                    <Row key={e.id} entry={e} />
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

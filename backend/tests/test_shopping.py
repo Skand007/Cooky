@@ -57,3 +57,37 @@ def test_only_owner_can_edit_or_delete_a_shopping_entry(client, owner_headers):
 
     assert client.patch(f"/api/shopping-list/{created['id']}", json={"bought": True}).status_code == 401
     assert client.delete(f"/api/shopping-list/{created['id']}").status_code == 401
+
+
+def _tomato(client):
+    return client.get("/api/items", params={"search": "Tomato"}).json()[0]["id"]
+
+
+def test_use_up_flag_adds_to_shopping_list_once(client, owner_headers):
+    entry = client.post(
+        "/api/inventory", json={"item_id": _tomato(client), "location": "fridge", "quantity": 1}, headers=owner_headers
+    ).json()
+    client.patch(f"/api/inventory/{entry['id']}", json={"use_up": True}, headers=owner_headers)
+    lines = client.get("/api/shopping-list").json()
+    assert len(lines) == 1 and lines[0]["note"] == "use up"
+    assert lines[0]["in_stock"] is False  # flagged use-up: still needs buying
+    # un-flag and re-flag: no duplicate while the first is unbought
+    client.patch(f"/api/inventory/{entry['id']}", json={"use_up": False}, headers=owner_headers)
+    assert client.get("/api/shopping-list").json()[0]["in_stock"] is True
+    client.patch(f"/api/inventory/{entry['id']}", json={"use_up": True}, headers=owner_headers)
+    assert len(client.get("/api/shopping-list").json()) == 1
+
+
+def test_shopping_list_alphabetical_and_in_stock(client, owner_headers):
+    ids = {}
+    for name in ("Rice", "Apple", "Tomato"):
+        found = client.get("/api/items", params={"search": name}).json()
+        ids[name] = next(i["id"] for i in found if i["name"] == name)
+        client.post("/api/shopping-list", json={"item_id": ids[name]}, headers=owner_headers)
+    client.post(
+        "/api/inventory", json={"item_id": ids["Rice"], "location": "shelf", "quantity": 2}, headers=owner_headers
+    )
+    lines = client.get("/api/shopping-list").json()
+    assert [ln["item"]["name"] for ln in lines] == ["Apple", "Rice", "Tomato"]
+    assert {ln["item"]["name"]: ln["in_stock"] for ln in lines} == {"Apple": False, "Rice": True, "Tomato": False}
+    assert client.get("/api/stats").json()["shopping"]["open"] == 2

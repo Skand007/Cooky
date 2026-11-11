@@ -36,6 +36,7 @@ export interface ShoppingEntry {
   unit: string | null;
   note: string | null;
   bought: boolean;
+  in_stock: boolean;
   added_at: string;
 }
 

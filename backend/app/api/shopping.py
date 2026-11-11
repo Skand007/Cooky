@@ -7,17 +7,16 @@ from app.db.base import get_db
 from app.models.inventory import InventoryEntry
 from app.models.shopping import ShoppingListEntry
 from app.schemas.shopping import ShoppingCreate, ShoppingOut, ShoppingUpdate, StockIn, StockOut
+from app.services.shopping import annotate
 
 router = APIRouter(prefix="/shopping-list", tags=["shopping-list"])
 
 
 @router.get("", response_model=list[ShoppingOut])
 def list_shopping(db: Session = Depends(get_db)) -> list[ShoppingListEntry]:
-    return (
-        db.query(ShoppingListEntry)
-        .order_by(ShoppingListEntry.bought, ShoppingListEntry.added_at.desc())
-        .all()
-    )
+    entries = db.query(ShoppingListEntry).all()
+    entries.sort(key=lambda e: e.item.name.lower())
+    return annotate(db, entries)
 
 
 @router.post("", response_model=ShoppingOut, status_code=status.HTTP_201_CREATED)
@@ -34,7 +33,7 @@ def add_shopping(
     db.add(entry)
     db.commit()
     db.refresh(entry)
-    return entry
+    return annotate(db, [entry])[0]
 
 
 def _stock(db: Session, entry: ShoppingListEntry, payload: StockIn) -> None:
@@ -95,7 +94,7 @@ def update_shopping(
 
     db.commit()
     db.refresh(entry)
-    return entry
+    return annotate(db, [entry])[0]
 
 
 @router.delete("/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)

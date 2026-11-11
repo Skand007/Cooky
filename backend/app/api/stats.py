@@ -21,6 +21,7 @@ from app.schemas.stats import (
     WeekCount,
 )
 from app.services.recipes import EXPIRING_DAYS, time_category
+from app.services.shopping import covered_item_ids
 
 router = APIRouter(tags=["stats"])
 
@@ -52,6 +53,7 @@ def stats(db: Session = Depends(get_db)) -> StatsOut:
     use_up = [e for e in entries if e.use_up]
 
     shopping = db.query(ShoppingListEntry).all()
+    covered = covered_item_ids(db, today)
     recipes = db.query(Recipe).all()
 
     logs = db.query(CookLog).all()
@@ -70,7 +72,8 @@ def stats(db: Session = Depends(get_db)) -> StatsOut:
             use_up=[_line(e, today) for e in use_up],
         ),
         shopping=ShoppingStats(
-            open=sum(1 for s in shopping if not s.bought), bought=sum(1 for s in shopping if s.bought)
+            open=sum(1 for s in shopping if not s.bought and s.item_id not in covered),
+            bought=sum(1 for s in shopping if s.bought),
         ),
         recipes=RecipeStats(
             total=len(recipes),

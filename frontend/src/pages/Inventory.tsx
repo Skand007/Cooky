@@ -39,6 +39,7 @@ export function Inventory() {
   const [quantity, setQuantity] = useState("1");
   const [unit, setUnit] = useState("");
   const [expiry, setExpiry] = useState("");
+  const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"name" | "expiry">("name");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -105,6 +106,7 @@ export function Inventory() {
       method: "PATCH",
       body: JSON.stringify({ use_up: !entry.use_up }),
     });
+    setNotice(entry.use_up ? "" : `${entry.item.name} flagged to use up and added to the shopping list.`);
     load();
   }
 
@@ -186,6 +188,8 @@ export function Inventory() {
           </button>
         ))}
       </div>
+
+      {notice && <p className="glass-sm text-sm">{notice}</p>}
 
       {showAdd && isOwner && (
         <form onSubmit={addEntry} className="glass space-y-2">

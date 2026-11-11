@@ -48,4 +48,5 @@ class ShoppingOut(BaseModel):
     unit: str | None
     note: str | None
     bought: bool
+    in_stock: bool = False  # already in the inventory (and not flagged use-up)
     added_at: datetime

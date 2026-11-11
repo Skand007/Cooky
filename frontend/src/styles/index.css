@@ -324,3 +324,119 @@ body {
   background: color-mix(in srgb, var(--color-text) 9%, transparent);
   outline: none;
 }
+
+/* ---- Shopping list: a long sheet of ruled paper ------------------------ */
+.paper-wrap {
+  position: relative;
+  padding-top: 0.6rem;
+  filter: drop-shadow(0 14px 22px var(--glass-shadow));
+}
+.paper-tape {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: 7rem;
+  height: 1.5rem;
+  transform: translateX(-50%) rotate(-2deg);
+  border-radius: 0.2rem;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.paper {
+  position: relative;
+  /* the paper stays paper in every theme, so ink colours are fixed */
+  --ink: #2f2c3a;
+  --ink-faint: #8b8794;
+  --rule: rgba(70, 110, 190, 0.28);
+  padding: 1.6rem 1rem 2.2rem 3.2rem;
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, transparent 2.5rem, rgba(220, 60, 60, 0.5) 2.5rem, rgba(220, 60, 60, 0.5) calc(2.5rem + 1.5px), transparent calc(2.5rem + 1.5px)),
+    radial-gradient(120% 60% at 0% 0%, rgba(255, 255, 255, 0.9), transparent 60%),
+    #fffdf4;
+  border-radius: 0.35rem 0.35rem 0 0;
+}
+/* torn zig-zag bottom edge */
+.paper::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  height: 10px;
+  background:
+    linear-gradient(-135deg, #fffdf4 5px, transparent 0) 0 0 / 14px 10px,
+    linear-gradient(135deg, #fffdf4 5px, transparent 0) 0 0 / 14px 10px;
+}
+.paper-title {
+  font-family: "Bradley Hand", "Segoe Print", "Marker Felt", "Comic Sans MS", cursive;
+  font-size: 1.9rem;
+  line-height: 2.6rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--rule);
+}
+.paper-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 2.6rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: "Bradley Hand", "Segoe Print", "Marker Felt", "Comic Sans MS", cursive;
+  font-size: 1.2rem;
+  line-height: 1.3;
+}
+.paper-row.is-done {
+  color: var(--ink-faint);
+}
+.paper-row.is-done .paper-name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(220, 60, 60, 0.7);
+}
+.paper-note {
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+}
+.paper-box {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.3rem;
+  background: transparent;
+  color: transparent;
+  font-size: 1rem;
+  line-height: 1;
+  transition: background-color 0.15s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+button.paper-box:active {
+  transform: scale(0.88);
+}
+.is-done .paper-box {
+  border-color: var(--ink-faint);
+  color: rgba(220, 60, 60, 0.85);
+}
+.paper-remove {
+  margin-left: auto;
+  flex: none;
+  font-family: system-ui, sans-serif;
+  font-size: 0.7rem;
+  color: rgba(190, 50, 50, 0.9);
+}
+.paper-divider {
+  margin: 0.4rem 0 0.1rem;
+  font-family: system-ui, sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}

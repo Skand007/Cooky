@@ -6,6 +6,7 @@ from app.api.items_util import resolve_item
 from app.db.base import get_db
 from app.models.inventory import InventoryEntry
 from app.schemas.inventory import InventoryCreate, InventoryOut, InventoryUpdate
+from app.services.shopping import USE_UP_NOTE, ensure_on_list
 
 router = APIRouter(prefix="/inventory", tags=["inventory"])
 
@@ -49,8 +50,13 @@ def update_inventory(
     if entry is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Entry not found")
 
+    was_use_up = entry.use_up
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(entry, field, value)
+
+    # Flagging something "use up" means it is running out: put it on the shopping list.
+    if entry.use_up and not was_use_up:
+        ensure_on_list(db, entry.item_id, USE_UP_NOTE)
 
     db.commit()
     db.refresh(entry)
