@@ -23,3 +23,14 @@ def _fresh_db():
 def client():
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture
+def owner_token(client):
+    res = client.post("/api/auth/login", json={"username": "skand", "password": "test-password"})
+    return res.json()["access_token"]
+
+
+@pytest.fixture
+def owner_headers(owner_token):
+    return {"Authorization": f"Bearer {owner_token}"}

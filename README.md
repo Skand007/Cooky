@@ -53,8 +53,16 @@ Four built-in themes, switchable from the header and remembered per device: **Ci
 
 ## Status
 
-**Phase 1 (this commit):** project skeleton, owner login, the four themes, mobile-first layout,
-CI, and a first deployment.
+**Phase 1:** project skeleton, owner login, the four themes, mobile-first layout, CI, and a
+first deployment.
 
-Next: inventory (locations, quantities, expiry dates), the catalogue of addable items, recipes
-(Spoonacular + custom + the recommendation bot), filters, the shopping list, and the stats page.
+**Phase 2 (this commit):** the item catalogue (seeded with ~130 common ingredients, including
+Indian staples, each with its locations, same-ingredient aliases — "spring onion" = "scallion" —
+and a default unit), typed-entry inventory across Fridge/Freezer/Shelf/Room with quantities and
+expiry dates, a "use up" flag per item, and the shopping list with a bought/not-bought split.
+Adding an item not yet in the catalogue creates it on the fly. All of it is public to browse;
+only the owner can add, edit, or delete.
+
+Next: recipes — Spoonacular search, the owner's own custom recipes, and the Gemini-powered bot
+that reads the current inventory — followed by the missing-ingredient and time/diet filters,
+and the stats page.

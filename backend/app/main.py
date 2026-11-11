@@ -3,39 +3,53 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth
+from app.api import auth, inventory, items, shopping
 from app.core.config import get_settings
 from app.core.security import hash_password
+from app.data.catalogue import CATALOGUE
 from app.db.base import Base, SessionLocal, engine
+from app.models.item import Item
 from app.models.owner import Owner
 
 settings = get_settings()
 
 
-def bootstrap_owner() -> None:
+def bootstrap_owner(db) -> None:
     """Create the single owner row from env vars if it doesn't exist yet.
 
     Safe to run on every cold start: it's a no-op once the row exists.
     """
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        existing = db.query(Owner).filter(Owner.username == settings.owner_username).first()
-        if existing is None:
-            db.add(
-                Owner(
-                    username=settings.owner_username,
-                    password_hash=hash_password(settings.owner_password),
-                )
+    existing = db.query(Owner).filter(Owner.username == settings.owner_username).first()
+    if existing is None:
+        db.add(
+            Owner(
+                username=settings.owner_username,
+                password_hash=hash_password(settings.owner_password),
             )
-            db.commit()
-    finally:
-        db.close()
+        )
+        db.commit()
+
+
+def bootstrap_catalogue(db) -> None:
+    """Seed the item catalogue once. A non-empty table means this already
+    ran (or the owner has since added their own items), so it's skipped.
+    """
+    if db.query(Item).first() is not None:
+        return
+    for name, category, default_unit, aliases in CATALOGUE:
+        db.add(Item(name=name, category=category, default_unit=default_unit, aliases=aliases))
+    db.commit()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    bootstrap_owner()
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        bootstrap_owner(db)
+        bootstrap_catalogue(db)
+    finally:
+        db.close()
     yield
 
 
@@ -50,6 +64,9 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api")
+app.include_router(items.router, prefix="/api")
+app.include_router(inventory.router, prefix="/api")
+app.include_router(shopping.router, prefix="/api")
 
 
 @app.get("/api/health")

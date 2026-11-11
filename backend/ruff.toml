@@ -1,7 +1,6 @@
-[tool.ruff]
 line-length = 110
 
-[tool.ruff.lint]
+[lint]
 select = ["E", "F", "B", "I"]
 # B008: FastAPI's Depends()/HTTPBearer() in argument defaults is the idiomatic pattern, not a bug.
 ignore = ["B008"]
