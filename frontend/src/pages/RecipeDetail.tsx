@@ -69,7 +69,7 @@ export function RecipeDetail() {
     <div className="space-y-4">
       <Link to="/recipes" className="text-sm text-text-muted">← Recipes</Link>
       <div>
-        <h1 className="font-display text-2xl">{recipe.title}</h1>
+        <h1 className="page-title">{recipe.title}</h1>
         <p className="text-xs text-text-muted mt-1">
           {recipe.total_minutes ? `${recipe.total_minutes} min` : "time unknown"} · serves {recipe.servings} ·{" "}
           {recipe.diets.join(", ") || "contains meat/fish"} · {recipe.source}
@@ -78,7 +78,7 @@ export function RecipeDetail() {
         {recipe.description && <p className="text-sm mt-2">{recipe.description}</p>}
       </div>
 
-      {message && <p className="rounded-lg bg-surface-alt border border-border p-2 text-sm">{message}</p>}
+      {message && <p className="glass-sm text-sm">{message}</p>}
 
       <section>
         <h2 className="font-semibold mb-2">
@@ -125,35 +125,35 @@ export function RecipeDetail() {
       {isOwner && (
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setShowCooked((v) => !v)} className="rounded-lg bg-accent text-surface text-sm font-semibold px-3 py-1.5">
+            <button onClick={() => setShowCooked((v) => !v)} className="btn-primary">
               I cooked it
             </button>
             {missingCount > 0 && (
-              <button onClick={addMissing} className="rounded-lg border border-border text-sm px-3 py-1.5">
+              <button onClick={addMissing} className="btn">
                 Add missing to shopping list
               </button>
             )}
-            <Link to={`/recipes/${recipe.id}/edit`} className="rounded-lg border border-border text-sm px-3 py-1.5">
+            <Link to={`/recipes/${recipe.id}/edit`} className="btn">
               Edit
             </Link>
-            <button onClick={remove} className="rounded-lg border border-border text-sm px-3 py-1.5 text-accent">
+            <button onClick={remove} className="btn text-accent">
               Delete
             </button>
           </div>
           {showCooked && (
-            <form onSubmit={markCooked} className="rounded-xl border border-border bg-surface-alt p-3 space-y-2">
+            <form onSubmit={markCooked} className="glass p-3 space-y-2">
               <input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Note (optional)"
                 maxLength={300}
-                className="w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-sm"
+                className="w-full field"
                 aria-label="Note"
               />
               <select
                 value={rating}
                 onChange={(e) => setRating(e.target.value)}
-                className="rounded-lg border border-border bg-surface px-2 py-1 text-sm"
+                className="field"
                 aria-label="Rating"
               >
                 <option value="">No rating</option>
@@ -165,7 +165,7 @@ export function RecipeDetail() {
                 <input type="checkbox" checked={deduct} onChange={(e) => setDeduct(e.target.checked)} />
                 Subtract ingredients from my stock (same units only)
               </label>
-              <button className="w-full rounded-lg bg-accent text-surface font-semibold py-2">Save</button>
+              <button className="w-full btn-primary">Save</button>
             </form>
           )}
         </div>

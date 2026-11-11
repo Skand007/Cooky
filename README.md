@@ -76,3 +76,7 @@ and the stats page.
 - **Stats** are computed live from the database.
 
 Backend env vars (Vercel backend project): `SPOONACULAR_API_KEY`, `GEMINI_API_KEY`, optional `GEMINI_MODEL`, `CHAT_PUBLIC`.
+
+## Design: liquid glass
+
+Translucent, light-catching panels over a soft colour backdrop, a floating glass header and tab bar, spring-feel press feedback, and four themes (Citrus and Linen light; Midnight and Charcoal dark). Tokens live in `frontend/src/styles/themes.css`, materials and controls (`.glass`, `.btn`, `.chip`, `.field`) in `frontend/src/styles/index.css`. It respects `prefers-reduced-motion`, `prefers-reduced-transparency` and `prefers-contrast`.

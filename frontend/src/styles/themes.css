@@ -1,49 +1,89 @@
-/* Cooky's four themes. Each sets the same set of CSS variables that
-   tailwind.config.js maps to utility classes (bg-surface, text-text, etc.)
-   so components never need theme-specific logic — just these variables. */
+/* Cooky's four themes (two light, two dark), designed as "liquid glass":
+   a colourful, softly blurred backdrop (the --blob-* colours) with translucent,
+   light-catching panels floating above it. Each theme sets the same variables;
+   components never need theme-specific logic. The Tailwind colour names
+   (surface, text, accent…) map to the --color-* variables. */
 
 :root[data-theme="citrus"] {
-  --color-surface: #fffaf0;
-  --color-surface-alt: #fff1d6;
-  --color-text: #2b2017;
-  --color-text-muted: #7a6a52;
-  --color-accent: #f6871f;
-  --color-accent-alt: #2e8b57;
-  --color-border: #f0dcb0;
+  color-scheme: light;
+  --color-surface: #fff3e3;
+  --color-surface-alt: rgba(255, 255, 255, 0.5);
+  --color-text: #2a1a0f;
+  --color-text-muted: #6f5640;
+  --color-accent: #e8590c;
+  --color-accent-alt: #17803f;
+  --color-border: rgba(255, 255, 255, 0.65);
+  --on-accent: #ffffff;
+  --blob-1: #ffb259;
+  --blob-2: #ff7a8a;
+  --blob-3: #ffe08a;
+  --glass-bg: rgba(255, 255, 255, 0.42);
+  --glass-hi: rgba(255, 255, 255, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-line: rgba(255, 255, 255, 0.55);
+  --glass-shadow: rgba(160, 80, 20, 0.18);
+  --field-bg: rgba(255, 255, 255, 0.55);
 }
 
 :root[data-theme="linen"] {
-  --color-surface: #f7f5ef;
-  --color-surface-alt: #ece7d9;
-  --color-text: #2f3328;
-  --color-text-muted: #6b7161;
-  --color-accent: #7a8b5c;
-  --color-accent-alt: #c76b4a;
-  --color-border: #ddd6c2;
+  color-scheme: light;
+  --color-surface: #eaf4ef;
+  --color-surface-alt: rgba(255, 255, 255, 0.5);
+  --color-text: #14261e;
+  --color-text-muted: #4d6558;
+  --color-accent: #17785a;
+  --color-accent-alt: #b4501a;
+  --color-border: rgba(255, 255, 255, 0.65);
+  --on-accent: #ffffff;
+  --blob-1: #7fd6bd;
+  --blob-2: #8fb4ff;
+  --blob-3: #d2f0a0;
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-hi: rgba(255, 255, 255, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.95);
+  --glass-line: rgba(255, 255, 255, 0.55);
+  --glass-shadow: rgba(20, 90, 80, 0.18);
+  --field-bg: rgba(255, 255, 255, 0.55);
 }
 
 :root[data-theme="midnight"] {
-  --color-surface: #161622;
-  --color-surface-alt: #1f2033;
-  --color-text: #f2efe9;
-  --color-text-muted: #a7a6bd;
-  --color-accent: #f6c453;
-  --color-accent-alt: #6ec6b8;
-  --color-border: #30314a;
+  color-scheme: dark;
+  --color-surface: #0a0a1c;
+  --color-surface-alt: rgba(255, 255, 255, 0.08);
+  --color-text: #f5f5ff;
+  --color-text-muted: #c6c6e4;
+  --color-accent: #ffc857;
+  --color-accent-alt: #6fe0cf;
+  --color-border: rgba(255, 255, 255, 0.16);
+  --on-accent: #1d1503;
+  --blob-1: #5a4bff;
+  --blob-2: #1f9cff;
+  --blob-3: #b64bff;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-hi: rgba(255, 255, 255, 0.14);
+  --glass-edge: rgba(255, 255, 255, 0.28);
+  --glass-line: rgba(255, 255, 255, 0.14);
+  --glass-shadow: rgba(0, 0, 0, 0.5);
+  --field-bg: rgba(255, 255, 255, 0.08);
 }
 
 :root[data-theme="charcoal"] {
-  --color-surface: #211a18;
-  --color-surface-alt: #2c2320;
-  --color-text: #f3ece6;
-  --color-text-muted: #baa89b;
-  --color-accent: #e2583e;
-  --color-accent-alt: #d9a441;
-  --color-border: #3b2f2b;
-}
-
-body {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  color-scheme: dark;
+  --color-surface: #130d0b;
+  --color-surface-alt: rgba(255, 255, 255, 0.08);
+  --color-text: #fbf0ea;
+  --color-text-muted: #dcc7bb;
+  --color-accent: #ff6b4a;
+  --color-accent-alt: #f2bd62;
+  --color-border: rgba(255, 255, 255, 0.15);
+  --on-accent: #1b0803;
+  --blob-1: #b8381f;
+  --blob-2: #b0601c;
+  --blob-3: #5a2038;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-hi: rgba(255, 255, 255, 0.14);
+  --glass-edge: rgba(255, 255, 255, 0.26);
+  --glass-line: rgba(255, 255, 255, 0.13);
+  --glass-shadow: rgba(0, 0, 0, 0.55);
+  --field-bg: rgba(255, 255, 255, 0.08);
 }

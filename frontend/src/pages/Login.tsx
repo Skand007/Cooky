@@ -25,8 +25,8 @@ export function Login() {
   }
 
   return (
-    <div className="max-w-sm mx-auto space-y-4">
-      <h1 className="font-display text-2xl">Owner login</h1>
+    <div className="glass max-w-sm mx-auto space-y-4 !p-5">
+      <h1 className="page-title">Owner login</h1>
       <p className="text-text-muted text-sm">
         Everyone can browse Cooky. Only Skand can sign in to add or change anything.
       </p>
@@ -39,7 +39,7 @@ export function Login() {
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2"
+            className="w-full field"
             autoComplete="username"
             required
           />
@@ -53,7 +53,7 @@ export function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2"
+            className="w-full field"
             autoComplete="current-password"
             required
           />
@@ -62,7 +62,7 @@ export function Login() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-lg bg-accent text-surface font-semibold py-2 disabled:opacity-60"
+          className="w-full btn-primary"
         >
           {submitting ? "Signing in…" : "Sign in"}
         </button>

@@ -63,11 +63,11 @@ export function Bot() {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl">Kitchen bot</h1>
+        <h1 className="page-title">Kitchen bot</h1>
         <select
           value={diet}
           onChange={(e) => setDiet(e.target.value)}
-          className="rounded-lg border border-border bg-surface px-2 py-1 text-sm"
+          className="field"
           aria-label="Diet for the bot"
         >
           <option value="">Vegetarian (default)</option>
@@ -81,12 +81,12 @@ export function Bot() {
       </p>
 
       {!canChat && (
-        <p className="rounded-lg border border-border bg-surface-alt p-3 text-sm">
+        <p className="glass-sm text-sm">
           The bot uses a shared free quota, so only the owner can chat. Log in as owner to use it.
         </p>
       )}
       {status && !status.configured && isOwner && (
-        <p className="rounded-lg border border-border bg-surface-alt p-3 text-sm">
+        <p className="glass-sm text-sm">
           The Gemini key isn't set yet. Add GEMINI_API_KEY in the backend project's Vercel settings and redeploy.
         </p>
       )}
@@ -95,7 +95,7 @@ export function Bot() {
         {messages.length === 0 && canChat && (
           <div className="flex flex-wrap gap-2">
             {STARTERS.map((s) => (
-              <button key={s} onClick={() => send(s)} className="rounded-full border border-border px-3 py-1 text-sm text-text-muted">
+              <button key={s} onClick={() => send(s)} className="chip">
                 {s}
               </button>
             ))}
@@ -104,8 +104,10 @@ export function Bot() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <p
-              className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
-                m.role === "user" ? "bg-accent text-surface" : "bg-surface-alt border border-border"
+              className={`max-w-[85%] whitespace-pre-wrap text-sm ${
+                m.role === "user"
+                  ? "btn-primary !rounded-3xl !justify-start !text-left !font-medium !px-4 !py-2.5"
+                  : "glass !rounded-3xl !py-2.5 !px-4"
               }`}
             >
               {m.content}
@@ -130,10 +132,10 @@ export function Bot() {
             onChange={(e) => setText(e.target.value)}
             maxLength={2000}
             placeholder="Ask about dinner…"
-            className="flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+            className="flex-1 field"
             aria-label="Message"
           />
-          <button disabled={busy || !text.trim()} className="rounded-lg bg-accent text-surface font-semibold px-4 disabled:opacity-50">
+          <button disabled={busy || !text.trim()} className="btn-primary">
             Send
           </button>
         </form>

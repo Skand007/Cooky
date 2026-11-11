@@ -4,14 +4,15 @@ export interface ThemeInfo {
   id: ThemeId;
   label: string;
   mode: "light" | "dark";
-  swatch: string; // accent color, for the little dot in the theme picker
+  swatch: string; // accent colour, for the little dot in the theme picker
+  bar: string; // browser toolbar colour (theme-color meta)
 }
 
 export const THEMES: ThemeInfo[] = [
-  { id: "citrus", label: "Citrus", mode: "light", swatch: "#f6871f" },
-  { id: "linen", label: "Linen", mode: "light", swatch: "#7a8b5c" },
-  { id: "midnight", label: "Midnight", mode: "dark", swatch: "#f6c453" },
-  { id: "charcoal", label: "Charcoal", mode: "dark", swatch: "#e2583e" },
+  { id: "citrus", label: "Citrus", mode: "light", swatch: "#e8590c", bar: "#fff3e3" },
+  { id: "linen", label: "Linen", mode: "light", swatch: "#17785a", bar: "#eaf4ef" },
+  { id: "midnight", label: "Midnight", mode: "dark", swatch: "#ffc857", bar: "#0a0a1c" },
+  { id: "charcoal", label: "Charcoal", mode: "dark", swatch: "#ff6b4a", bar: "#130d0b" },
 ];
 
 const STORAGE_KEY = "cooky-theme";
@@ -30,5 +31,7 @@ export function applyTheme(theme: ThemeId): void {
   document.documentElement.setAttribute("data-theme", theme);
   const mode = THEMES.find((t) => t.id === theme)?.mode ?? "light";
   document.documentElement.classList.toggle("dark", mode === "dark");
+  const bar = THEMES.find((t) => t.id === theme)?.bar;
+  if (bar) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", bar);
   window.localStorage.setItem(STORAGE_KEY, theme);
 }

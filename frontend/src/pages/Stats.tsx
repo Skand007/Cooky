@@ -7,8 +7,8 @@ function Bar({ label, value, max }: { label: string; value: number; max: number 
   return (
     <div className="flex items-center gap-2 text-sm">
       <span className="w-28 truncate text-text-muted">{label}</span>
-      <div className="flex-1 h-3 rounded bg-surface-alt border border-border overflow-hidden">
-        <div className="h-full bg-accent" style={{ width: `${max ? (value / max) * 100 : 0}%` }} />
+      <div className="flex-1 h-2.5 rounded-full overflow-hidden bg-[color:var(--glass-bg)] border border-[color:var(--glass-line)]">
+        <div className="h-full rounded-full bg-accent transition-[width] duration-500" style={{ width: `${max ? (value / max) * 100 : 0}%` }} />
       </div>
       <span className="w-6 text-right">{value}</span>
     </div>
@@ -17,7 +17,7 @@ function Bar({ label, value, max }: { label: string; value: number; max: number 
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-border bg-surface-alt p-3 space-y-2">
+    <section className="glass p-3 space-y-2">
       <h2 className="font-semibold">{title}</h2>
       {children}
     </section>
@@ -47,7 +47,7 @@ export function Stats() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-2xl">Stats</h1>
+      <h1 className="page-title">Stats</h1>
 
       <div className="grid grid-cols-2 gap-2 text-center">
         {[
@@ -56,7 +56,7 @@ export function Stats() {
           ["Recipes", stats.recipes.total],
           ["Cooked (30 days)", stats.cooking.last_30_days],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-border bg-surface-alt p-3">
+          <div key={label} className="glass p-3">
             <p className="text-2xl font-display text-accent">{value}</p>
             <p className="text-xs text-text-muted">{label}</p>
           </div>

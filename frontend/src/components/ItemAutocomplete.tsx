@@ -69,16 +69,16 @@ export function ItemAutocomplete({ onPick, placeholder = "Search ingredients…"
         }}
         onFocus={() => setOpen(true)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-border bg-surface-alt px-3 py-2"
+        className="w-full field"
       />
       {open && query.trim().length >= 2 && (
-        <div className="absolute z-20 mt-1 w-full rounded-lg border border-border bg-surface-alt shadow-lg max-h-56 overflow-y-auto">
+        <div className="absolute z-20 mt-1 w-full glass-menu menu-enter p-1 max-h-56 overflow-y-auto">
           {results.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => pick(item)}
-              className="block w-full text-left px-3 py-2 text-sm hover:bg-surface"
+              className="menu-item"
             >
               {item.name}
               {item.category && <span className="text-text-muted"> · {item.category}</span>}
@@ -88,7 +88,7 @@ export function ItemAutocomplete({ onPick, placeholder = "Search ingredients…"
             <button
               type="button"
               onClick={pickNew}
-              className="block w-full text-left px-3 py-2 text-sm text-accent hover:bg-surface"
+              className="menu-item text-accent font-semibold"
             >
               + Add "{query.trim()}" as a new item
             </button>

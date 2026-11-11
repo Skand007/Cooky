@@ -32,7 +32,7 @@ export function Catalogue() {
 
   return (
     <div className="space-y-3">
-      <h1 className="font-display text-2xl">Catalogue</h1>
+      <h1 className="page-title">Catalogue</h1>
       <p className="text-xs text-text-muted">
         Aliases make “scallion” and “spring onion” the same ingredient. Jain-friendly and staple flags drive the diet
         filters and “assume salt, oil, water”.
@@ -41,12 +41,12 @@ export function Catalogue() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search items…"
-        className="w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-sm"
+        className="w-full field"
         aria-label="Search catalogue"
       />
       <ul className="space-y-2">
         {items.map((item) => (
-          <li key={item.id} className="rounded-xl border border-border bg-surface-alt p-3 text-sm">
+          <li key={item.id} className="glass p-3 text-sm">
             <div className="flex justify-between gap-2">
               <span className="font-medium">{item.name}</span>
               <button
@@ -54,7 +54,7 @@ export function Catalogue() {
                   setEditing(editing?.id === item.id ? null : item);
                   setAliases(item.aliases.join(", "));
                 }}
-                className="text-xs rounded-lg border border-border px-2 py-0.5"
+                className="text-xs btn"
               >
                 {editing?.id === item.id ? "Close" : "Edit"}
               </button>
@@ -69,14 +69,14 @@ export function Catalogue() {
                 <input
                   value={aliases}
                   onChange={(e) => setAliases(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-surface px-2 py-1"
+                  className="w-full field"
                   aria-label="Aliases"
                 />
                 <div className="flex flex-wrap gap-2 items-center">
                   <select
                     defaultValue={item.diet}
                     onChange={(e) => patch(item, { diet: e.target.value })}
-                    className="rounded-lg border border-border bg-surface px-2 py-1"
+                    className="field"
                     aria-label="Diet"
                   >
                     <option value="veg">Vegetarian</option>
@@ -95,7 +95,7 @@ export function Catalogue() {
                     onClick={() =>
                       patch(item, { aliases: aliases.split(",").map((a) => a.trim()).filter(Boolean) })
                     }
-                    className="rounded-lg bg-accent text-surface px-3 py-1 font-semibold"
+                    className="btn-primary"
                   >
                     Save aliases
                   </button>

@@ -22,9 +22,9 @@ export function Home() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display text-2xl">What's in the kitchen?</h1>
+      <h1 className="page-title">What's in the kitchen?</h1>
 
-      <section className="rounded-xl border border-border bg-surface-alt p-3 space-y-2">
+      <section className="glass p-3 space-y-2">
         <h2 className="font-semibold">Cook right now</h2>
         {ready.length === 0 ? (
           <p className="text-sm text-text-muted">
@@ -46,7 +46,7 @@ export function Home() {
       </section>
 
       {attention.length > 0 && (
-        <section className="rounded-xl border border-border bg-surface-alt p-3 space-y-1">
+        <section className="glass p-3 space-y-1">
           <h2 className="font-semibold">Use soon</h2>
           {attention.map((e) => (
             <p key={e.id} className={`text-sm ${e.days_left !== null && e.days_left < 0 ? "text-accent" : "text-accent-alt"}`}>
@@ -57,7 +57,7 @@ export function Home() {
       )}
 
       {stats && stats.inventory.use_up.length > 0 && (
-        <section className="rounded-xl border border-border bg-surface-alt p-3 space-y-1">
+        <section className="glass p-3 space-y-1">
           <h2 className="font-semibold">Flagged to use up</h2>
           <p className="text-sm">{stats.inventory.use_up.map((e) => e.name).join(", ")}</p>
           <Link to="/recipes" className="text-xs text-accent underline">Find recipes that use them</Link>
@@ -65,16 +65,16 @@ export function Home() {
       )}
 
       <div className="grid grid-cols-2 gap-2 text-center text-sm">
-        <Link to="/inventory" className="rounded-xl border border-border bg-surface-alt p-3">
+        <Link to="/inventory" className="glass p-3">
           <span className="block text-2xl font-display text-accent">{stats?.inventory.total ?? "–"}</span>
           items in stock
         </Link>
-        <Link to="/shopping-list" className="rounded-xl border border-border bg-surface-alt p-3">
+        <Link to="/shopping-list" className="glass p-3">
           <span className="block text-2xl font-display text-accent">{stats?.shopping.open ?? "–"}</span>
           to buy
         </Link>
       </div>
-      <Link to="/bot" className="block rounded-xl bg-accent text-surface text-center font-semibold py-2">
+      <Link to="/bot" className="btn-primary w-full !py-3 !text-base">
         Ask the kitchen bot
       </Link>
     </div>

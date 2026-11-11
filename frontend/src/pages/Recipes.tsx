@@ -19,12 +19,7 @@ function minutesLabel(r: Recipe): string {
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button
-      onClick={onClick}
-      className={`rounded-full px-3 py-1 text-xs whitespace-nowrap border ${
-        active ? "bg-accent text-surface border-accent" : "border-border text-text-muted"
-      }`}
-    >
+    <button onClick={onClick} aria-pressed={active} className="chip">
       {children}
     </button>
   );
@@ -100,9 +95,9 @@ export function Recipes() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl">Recipes</h1>
+        <h1 className="page-title">Recipes</h1>
         {isOwner && (
-          <Link to="/recipes/new" className="rounded-lg bg-accent text-surface text-sm font-semibold px-3 py-1.5">
+          <Link to="/recipes/new" className="btn-primary">
             + New recipe
           </Link>
         )}
@@ -115,12 +110,12 @@ export function Recipes() {
       </div>
 
       {tab !== "online" && (
-        <div className="space-y-2 rounded-xl border border-border bg-surface-alt p-3">
+        <div className="space-y-2 glass p-3">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search recipes or ingredients…"
-            className="w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-sm"
+            className="w-full field"
             aria-label="Search recipes"
           />
           {tab === "suggest" && (
@@ -140,7 +135,7 @@ export function Recipes() {
             <select
               value={diet}
               onChange={(e) => setDiet(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-2 py-1 text-sm"
+              className="field"
               aria-label="Diet"
             >
               <option value="">Any diet</option>
@@ -175,7 +170,7 @@ export function Recipes() {
           <ul className="space-y-2">
             {suggestions.map((s) => (
               <li key={s.recipe.id}>
-                <Link to={`/recipes/${s.recipe.id}`} className="block rounded-xl border border-border bg-surface-alt p-3">
+                <Link to={`/recipes/${s.recipe.id}`} className="block glass p-3">
                   <div className="flex justify-between gap-2">
                     <p className="font-medium">{s.recipe.title}</p>
                     <span className="text-xs text-text-muted whitespace-nowrap">{minutesLabel(s.recipe)}</span>
@@ -208,7 +203,7 @@ export function Recipes() {
           <ul className="space-y-2">
             {recipes.map((r) => (
               <li key={r.id}>
-                <Link to={`/recipes/${r.id}`} className="block rounded-xl border border-border bg-surface-alt p-3">
+                <Link to={`/recipes/${r.id}`} className="block glass p-3">
                   <div className="flex justify-between gap-2">
                     <p className="font-medium">{r.title}</p>
                     <span className="text-xs text-text-muted whitespace-nowrap">{minutesLabel(r)}</span>
@@ -230,10 +225,10 @@ export function Recipes() {
               value={onlineQuery}
               onChange={(e) => setOnlineQuery(e.target.value)}
               placeholder="e.g. paneer, dal, pasta…"
-              className="flex-1 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm"
+              className="flex-1 field"
               aria-label="Search online"
             />
-            <button className="rounded-lg bg-accent text-surface text-sm font-semibold px-3">Search</button>
+            <button className="btn-primary">Search</button>
           </form>
           <p className="text-xs text-text-muted">
             Vegetarian recipes from Spoonacular. Importing copies a recipe into Cooky so it works offline and
@@ -242,7 +237,7 @@ export function Recipes() {
           {onlineMsg && <p className="text-sm text-accent-alt">{onlineMsg}</p>}
           <ul className="space-y-2">
             {hits.map((h) => (
-              <li key={h.id} className="rounded-xl border border-border bg-surface-alt p-3 flex items-center justify-between gap-2">
+              <li key={h.id} className="glass p-3 flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium truncate">{h.title}</p>
                   <p className="text-xs text-text-muted">{h.ready_in_minutes ? `${h.ready_in_minutes} min` : "time unknown"}</p>
@@ -250,7 +245,7 @@ export function Recipes() {
                 <button
                   disabled={h.already_imported || importing === h.id}
                   onClick={() => importHit(h)}
-                  className="text-xs rounded-lg border border-border px-2 py-1 disabled:opacity-50"
+                  className="text-xs btn"
                 >
                   {h.already_imported ? "Imported" : importing === h.id ? "Importing…" : "Import"}
                 </button>

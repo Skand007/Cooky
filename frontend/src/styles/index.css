@@ -9,3 +9,318 @@ body,
 #root {
   min-height: 100%;
 }
+
+body {
+  margin: 0;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  /* The liquid backdrop: three soft colour fields that the glass refracts. */
+  background-image:
+    radial-gradient(60vmax 50vmax at 8% 6%, var(--blob-1), transparent 60%),
+    radial-gradient(55vmax 45vmax at 96% 30%, var(--blob-2), transparent 58%),
+    radial-gradient(60vmax 50vmax at 30% 104%, var(--blob-3), transparent 60%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.3s ease;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+@layer components {
+  /* ---- Materials ------------------------------------------------------ */
+  .glass,
+  .glass-sm,
+  .glass-bar {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 0% 0%, var(--glass-hi), transparent 55%),
+      var(--glass-bg);
+    -webkit-backdrop-filter: blur(26px) saturate(190%);
+    backdrop-filter: blur(26px) saturate(190%);
+    border: 1px solid var(--glass-line);
+    /* bright top edge = light catching the rim; soft shadow lifts it off the backdrop */
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+      0 10px 34px -8px var(--glass-shadow);
+  }
+  .glass {
+    border-radius: 1.5rem;
+    padding: 0.875rem;
+  }
+  .glass-sm {
+    border-radius: 1rem;
+    padding: 0.5rem 0.75rem;
+  }
+  .glass-bar {
+    border-radius: 9999px;
+  }
+
+  /* ---- Controls ------------------------------------------------------- */
+  .btn,
+  .btn-primary,
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      opacity 0.2s ease;
+  }
+  /* feedback lives on the press and is instant */
+  .btn:active,
+  .btn-primary:active,
+  .chip:active {
+    transform: scale(0.95);
+    transition-duration: 0.08s;
+  }
+  .btn:disabled,
+  .btn-primary:disabled,
+  .chip:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .btn,
+  .chip {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8125rem;
+    color: var(--color-text);
+    background:
+      linear-gradient(180deg, var(--glass-hi), transparent 80%),
+      var(--glass-bg);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--glass-line);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      0 4px 14px -6px var(--glass-shadow);
+  }
+  .chip {
+    padding: 0.35rem 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+  .chip[aria-pressed="true"],
+  .chip.is-active {
+    color: var(--on-accent);
+    border-color: transparent;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 60%),
+      var(--color-accent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 6px 18px -6px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  }
+
+  .btn-primary {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.875rem;
+    color: var(--on-accent);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 55%),
+      var(--color-accent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+      0 8px 22px -8px color-mix(in srgb, var(--color-accent) 80%, transparent);
+  }
+
+  .field {
+    border-radius: 0.9rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.875rem;
+    color: var(--color-text);
+    background: var(--field-bg);
+    border: 1px solid var(--glass-line);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .field::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.75;
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+  select.field {
+    padding-right: 0.5rem;
+  }
+
+  .pill {
+    display: inline-block;
+    border-radius: 9999px;
+    padding: 0.05rem 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  /* ---- Type ----------------------------------------------------------- */
+  .page-title {
+    font-size: 2rem;
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.03em; /* tighter tracking as type gets larger */
+    font-optical-sizing: auto;
+  }
+  .section-title {
+    font-size: 1.0625rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+  }
+
+  /* ---- Tab bar -------------------------------------------------------- */
+  .tab {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    border-radius: 9999px;
+    padding: 0.4rem 0.25rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--color-text-muted);
+    transition: color 0.2s ease, background-color 0.25s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .tab:active {
+    transform: scale(0.94);
+  }
+  .tab.is-active {
+    color: var(--color-accent);
+    background:
+      linear-gradient(180deg, var(--glass-hi), transparent),
+      var(--glass-bg);
+    box-shadow:
+      inset 0 1px 0 var(--glass-edge),
+      0 3px 12px -4px var(--glass-shadow);
+  }
+}
+
+/* Entrance: a short, calm rise; interruptible because it is only on mount. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* A menu "materialises" from its trigger: blur and scale arrive together. */
+@keyframes materialize {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.page-enter {
+  animation: rise 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.menu-enter {
+  transform-origin: top right;
+  animation: materialize 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Accessibility: three independent user signals. */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .menu-enter {
+    animation: none;
+  }
+  .btn:active,
+  .btn-primary:active,
+  .chip:active,
+  .tab:active {
+    transform: none;
+  }
+  body,
+  .btn,
+  .btn-primary,
+  .chip,
+  .tab {
+    transition: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-sm,
+  .glass-bar,
+  .btn,
+  .chip,
+  .field {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--color-surface);
+  }
+}
+@media (prefers-contrast: more) {
+  .glass,
+  .glass-sm,
+  .glass-bar,
+  .btn,
+  .chip,
+  .field {
+    border-color: var(--color-text-muted);
+  }
+}
+
+/* Dropdowns and menus sit above other glass, so they use a denser material
+   (a light translucent layer must never be stacked on another one). */
+.glass-menu {
+  /* Nearly opaque: menus usually sit inside another backdrop-filter surface,
+     where a second blur cannot reach the page behind it. */
+  background: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  backdrop-filter: blur(30px) saturate(190%);
+  border: 1px solid var(--glass-line);
+  border-radius: 1.1rem;
+  box-shadow:
+    inset 0 1px 0 var(--glass-edge),
+    0 18px 40px -10px var(--glass-shadow);
+}
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.7rem;
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  font-size: 0.875rem;
+  transition: background-color 0.15s ease;
+}
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: color-mix(in srgb, var(--color-text) 9%, transparent);
+  outline: none;
+}

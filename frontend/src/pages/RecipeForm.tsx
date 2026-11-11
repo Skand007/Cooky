@@ -99,12 +99,12 @@ export function RecipeForm() {
     }
   }
 
-  const input = "w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-sm";
+  const input = "w-full field";
 
   return (
     <form onSubmit={save} className="space-y-4">
       <Link to={editing ? `/recipes/${id}` : "/recipes"} className="text-sm text-text-muted">← Back</Link>
-      <h1 className="font-display text-2xl">{editing ? "Edit recipe" : "New recipe"}</h1>
+      <h1 className="page-title">{editing ? "Edit recipe" : "New recipe"}</h1>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required className={input} aria-label="Title" />
       <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description (optional)" rows={2} className={input} aria-label="Description" />
       <div className="grid grid-cols-3 gap-2">
@@ -133,8 +133,8 @@ export function RecipeForm() {
         {lines.map((l, i) => (
           <div key={i} className="flex items-center gap-2 text-sm">
             <span className="flex-1 truncate">{l.name}</span>
-            <input type="number" step="any" value={l.quantity} onChange={(e) => updateLine(i, { quantity: e.target.value })} placeholder="qty" className="w-16 rounded-lg border border-border bg-surface px-2 py-1" aria-label={`Quantity of ${l.name}`} />
-            <input value={l.unit} onChange={(e) => updateLine(i, { unit: e.target.value })} placeholder="unit" className="w-16 rounded-lg border border-border bg-surface px-2 py-1" aria-label={`Unit of ${l.name}`} />
+            <input type="number" step="any" value={l.quantity} onChange={(e) => updateLine(i, { quantity: e.target.value })} placeholder="qty" className="w-16 field" aria-label={`Quantity of ${l.name}`} />
+            <input value={l.unit} onChange={(e) => updateLine(i, { unit: e.target.value })} placeholder="unit" className="w-16 field" aria-label={`Unit of ${l.name}`} />
             <label className="text-xs flex items-center gap-1" title="Main ingredient: counts extra for use-up">
               <input type="checkbox" checked={l.is_main} onChange={(e) => updateLine(i, { is_main: e.target.checked })} />main
             </label>
@@ -149,7 +149,7 @@ export function RecipeForm() {
       </section>
 
       {error && <p className="text-accent text-sm">{error}</p>}
-      <button className="w-full rounded-lg bg-accent text-surface font-semibold py-2">Save recipe</button>
+      <button className="w-full btn-primary">Save recipe</button>
     </form>
   );
 }

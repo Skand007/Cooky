@@ -16,8 +16,9 @@ export default {
         border: "var(--color-border)",
       },
       fontFamily: {
-        sans: ["Nunito", "system-ui", "sans-serif"],
-        display: ["Fredoka", "system-ui", "sans-serif"],
+        // The platform system font (SF Pro on Apple devices) ships its own optical sizing.
+        sans: ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Inter", "system-ui", "Segoe UI", "sans-serif"],
+        display: ["-apple-system", "BlinkMacSystemFont", "SF Pro Display", "Inter", "system-ui", "Segoe UI", "sans-serif"],
       },
     },
   },

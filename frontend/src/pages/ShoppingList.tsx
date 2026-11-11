@@ -72,11 +72,11 @@ export function ShoppingList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl">Shopping list</h1>
+        <h1 className="page-title">Shopping list</h1>
         {isOwner && (
           <button
             onClick={() => setShowAdd((v) => !v)}
-            className="rounded-lg bg-accent text-surface text-sm font-semibold px-3 py-1.5"
+            className="btn-primary"
           >
             {showAdd ? "Cancel" : "+ Add"}
           </button>
@@ -84,7 +84,7 @@ export function ShoppingList() {
       </div>
 
       {showAdd && isOwner && (
-        <form onSubmit={addEntry} className="rounded-xl border border-border bg-surface-alt p-3 space-y-2">
+        <form onSubmit={addEntry} className="glass p-3 space-y-2">
           <ItemAutocomplete onPick={setPendingItem} placeholder="What do you need to buy?" />
           {pendingItem && (
             <p className="text-sm text-text-muted">
@@ -98,39 +98,39 @@ export function ShoppingList() {
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               placeholder="qty (optional)"
-              className="w-28 rounded-lg border border-border bg-surface px-2 py-1.5"
+              className="w-28 field"
             />
             <input
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="note (optional)"
-              className="flex-1 rounded-lg border border-border bg-surface px-2 py-1.5"
+              className="flex-1 field"
             />
           </div>
           <button
             type="submit"
             disabled={!pendingItem}
-            className="w-full rounded-lg bg-accent text-surface font-semibold py-2 disabled:opacity-50"
+            className="w-full btn-primary"
           >
             Add to list
           </button>
         </form>
       )}
 
-      {stockMsg && <p className="rounded-lg border border-border bg-surface-alt p-2 text-sm">{stockMsg}</p>}
+      {stockMsg && <p className="glass-sm text-sm">{stockMsg}</p>}
       {isOwner && entries.some((e) => e.bought) && (
         <div className="flex items-center gap-2 text-sm">
           <select
             value={stockLocation}
             onChange={(e) => setStockLocation(e.target.value as Location)}
-            className="rounded-lg border border-border bg-surface px-2 py-1"
+            className="field"
             aria-label="Where to put bought items"
           >
             {LOCATIONS.map((l) => (
               <option key={l.id} value={l.id}>{l.label}</option>
             ))}
           </select>
-          <button onClick={stockBought} className="rounded-lg border border-border px-3 py-1">
+          <button onClick={stockBought} className="btn">
             Move all bought to inventory
           </button>
         </div>
@@ -146,7 +146,7 @@ export function ShoppingList() {
             {toBuy.map((entry) => (
               <li
                 key={entry.id}
-                className="rounded-xl border border-border bg-surface-alt p-3 flex items-center gap-3"
+                className="glass p-3 flex items-center gap-3"
               >
                 {isOwner && (
                   <input
@@ -184,7 +184,7 @@ export function ShoppingList() {
                 {bought.map((entry) => (
                   <li
                     key={entry.id}
-                    className="rounded-xl border border-border bg-surface-alt p-3 flex items-center gap-3 opacity-60"
+                    className="glass p-3 flex items-center gap-3 opacity-60"
                   >
                     {isOwner && (
                       <input

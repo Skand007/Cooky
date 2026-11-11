@@ -39,6 +39,13 @@ export function Inventory() {
   const [quantity, setQuantity] = useState("1");
   const [unit, setUnit] = useState("");
   const [expiry, setExpiry] = useState("");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"name" | "expiry">("name");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editQty, setEditQty] = useState("");
+  const [editUnit, setEditUnit] = useState("");
+  const [editExpiry, setEditExpiry] = useState("");
+  const [editLocation, setEditLocation] = useState<Location>("fridge");
 
   function load() {
     setLoading(true);
@@ -50,9 +57,26 @@ export function Inventory() {
 
   useEffect(load, []);
 
-  const grouped = useMemo(
-    () => entries.filter((e) => e.location === activeLocation),
-    [entries, activeLocation]
+  const needle = search.trim().toLowerCase();
+  const grouped = useMemo(() => {
+    // While searching, look across all four places so nothing hides in another tab.
+    const list = entries.filter((e) =>
+      needle ? e.item.name.toLowerCase().includes(needle) : e.location === activeLocation
+    );
+    return [...list].sort((a, b) => {
+      if (sort === "expiry") {
+        if (!a.expiry_date && !b.expiry_date) return a.item.name.localeCompare(b.item.name);
+        if (!a.expiry_date) return 1;
+        if (!b.expiry_date) return -1;
+        return a.expiry_date.localeCompare(b.expiry_date);
+      }
+      return a.item.name.localeCompare(b.item.name);
+    });
+  }, [entries, activeLocation, needle, sort]);
+
+  const counts = useMemo(
+    () => Object.fromEntries(LOCATIONS.map((l) => [l.id, entries.filter((e) => e.location === l.id).length])),
+    [entries]
   );
 
   async function addEntry(e: React.FormEvent) {
@@ -89,38 +113,82 @@ export function Inventory() {
     load();
   }
 
+  function startEdit(entry: InventoryEntry) {
+    if (editingId === entry.id) {
+      setEditingId(null);
+      return;
+    }
+    setEditingId(entry.id);
+    setEditQty(String(entry.quantity));
+    setEditUnit(entry.unit ?? "");
+    setEditExpiry(entry.expiry_date ?? "");
+    setEditLocation(entry.location);
+  }
+
+  async function saveEdit(e: React.FormEvent, entry: InventoryEntry) {
+    e.preventDefault();
+    await apiFetch(`/api/inventory/${entry.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        quantity: Number(editQty) || entry.quantity,
+        unit: editUnit || null,
+        expiry_date: editExpiry || null,
+        location: editLocation,
+      }),
+    });
+    setEditingId(null);
+    load();
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl">Inventory</h1>
+        <h1 className="page-title">Inventory</h1>
         {isOwner && (
-          <button
-            onClick={() => setShowAdd((v) => !v)}
-            className="rounded-lg bg-accent text-surface text-sm font-semibold px-3 py-1.5"
-          >
+          <button onClick={() => setShowAdd((v) => !v)} className="btn-primary">
             {showAdd ? "Cancel" : "+ Add item"}
           </button>
         )}
+      </div>
+
+      <div className="flex gap-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search everything in stock…"
+          className="field flex-1"
+          aria-label="Search stock"
+        />
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as "name" | "expiry")}
+          className="field"
+          aria-label="Sort"
+        >
+          <option value="name">A–Z</option>
+          <option value="expiry">Expiry</option>
+        </select>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {LOCATIONS.map((loc) => (
           <button
             key={loc.id}
-            onClick={() => setActiveLocation(loc.id)}
-            className={`rounded-full px-3 py-1.5 text-sm whitespace-nowrap border ${
-              activeLocation === loc.id
-                ? "bg-accent text-surface border-accent"
-                : "border-border text-text-muted"
-            }`}
+            onClick={() => {
+              setActiveLocation(loc.id);
+              setSearch("");
+            }}
+            aria-pressed={activeLocation === loc.id && !needle}
+            className="chip !text-sm"
           >
             {loc.label}
+            <span className="opacity-70 text-xs">{counts[loc.id]}</span>
           </button>
         ))}
       </div>
 
       {showAdd && isOwner && (
-        <form onSubmit={addEntry} className="rounded-xl border border-border bg-surface-alt p-3 space-y-2">
+        <form onSubmit={addEntry} className="glass space-y-2">
           <ItemAutocomplete onPick={setPendingItem} />
           {pendingItem && (
             <p className="text-sm text-text-muted">
@@ -134,29 +202,25 @@ export function Inventory() {
               step="any"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-20 rounded-lg border border-border bg-surface px-2 py-1.5"
+              className="w-20 field"
               aria-label="Quantity"
             />
             <input
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               placeholder="unit"
-              className="w-24 rounded-lg border border-border bg-surface px-2 py-1.5"
+              className="w-24 field"
               aria-label="Unit"
             />
             <input
               type="date"
               value={expiry}
               onChange={(e) => setExpiry(e.target.value)}
-              className="flex-1 rounded-lg border border-border bg-surface px-2 py-1.5"
+              className="flex-1 field"
               aria-label="Expiry date"
             />
           </div>
-          <button
-            type="submit"
-            disabled={!pendingItem}
-            className="w-full rounded-lg bg-accent text-surface font-semibold py-2 disabled:opacity-50"
-          >
+          <button type="submit" disabled={!pendingItem} className="btn-primary w-full">
             Add to {LOCATIONS.find((l) => l.id === activeLocation)?.label}
           </button>
         </form>
@@ -165,44 +229,81 @@ export function Inventory() {
       {loading ? (
         <p className="text-text-muted text-sm">Loading…</p>
       ) : grouped.length === 0 ? (
-        <p className="text-text-muted text-sm">Nothing here yet.</p>
+        <p className="text-text-muted text-sm">{needle ? "No match in stock." : "Nothing here yet."}</p>
       ) : (
         <ul className="space-y-2">
           {grouped.map((entry) => (
-            <li
-              key={entry.id}
-              className="rounded-xl border border-border bg-surface-alt p-3 flex items-center justify-between gap-2"
-            >
-              <div className="min-w-0">
-                <p className="font-medium truncate">
-                  {entry.item.name}
-                  {entry.use_up && (
-                    <span className="ml-2 text-xs rounded-full bg-accent/20 text-accent px-2 py-0.5">
-                      use up
-                    </span>
-                  )}
-                </p>
-                <p className="text-xs text-text-muted">
-                  {entry.quantity} {entry.unit ?? ""}
-                </p>
-                <ExpiryBadge dateStr={entry.expiry_date} />
-              </div>
-              {isOwner && (
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={() => toggleUseUp(entry)}
-                    className="text-xs rounded-lg border border-border px-2 py-1"
-                  >
-                    {entry.use_up ? "Unflag" : "Use up"}
-                  </button>
-                  <button
-                    onClick={() => removeEntry(entry)}
-                    aria-label={`Remove ${entry.item.name}`}
-                    className="text-xs text-accent"
-                  >
-                    Remove
-                  </button>
+            <li key={entry.id} className="glass">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium truncate">
+                    {entry.item.name}
+                    {entry.use_up && <span className="pill ml-2">use up</span>}
+                  </p>
+                  <p className="text-xs text-text-muted">
+                    {entry.quantity} {entry.unit ?? ""}
+                    {needle && ` · ${LOCATIONS.find((l) => l.id === entry.location)?.label}`}
+                  </p>
+                  <ExpiryBadge dateStr={entry.expiry_date} />
                 </div>
+                {isOwner && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button onClick={() => toggleUseUp(entry)} className="btn">
+                      {entry.use_up ? "Unflag" : "Use up"}
+                    </button>
+                    <button onClick={() => startEdit(entry)} className="btn" aria-label={`Edit ${entry.item.name}`}>
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => removeEntry(entry)}
+                      aria-label={`Remove ${entry.item.name}`}
+                      className="text-xs text-accent px-1"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+              {isOwner && editingId === entry.id && (
+                <form onSubmit={(e) => saveEdit(e, entry)} className="mt-3 space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      step="any"
+                      value={editQty}
+                      onChange={(e) => setEditQty(e.target.value)}
+                      className="w-20 field"
+                      aria-label="Edit quantity"
+                    />
+                    <input
+                      value={editUnit}
+                      onChange={(e) => setEditUnit(e.target.value)}
+                      placeholder="unit"
+                      className="w-20 field"
+                      aria-label="Edit unit"
+                    />
+                    <input
+                      type="date"
+                      value={editExpiry}
+                      onChange={(e) => setEditExpiry(e.target.value)}
+                      className="flex-1 field"
+                      aria-label="Edit expiry date"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <select
+                      value={editLocation}
+                      onChange={(e) => setEditLocation(e.target.value as Location)}
+                      className="field"
+                      aria-label="Edit location"
+                    >
+                      {LOCATIONS.map((l) => (
+                        <option key={l.id} value={l.id}>{l.label}</option>
+                      ))}
+                    </select>
+                    <button className="btn-primary flex-1">Save</button>
+                  </div>
+                </form>
               )}
             </li>
           ))}
